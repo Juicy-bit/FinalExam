@@ -34,6 +34,7 @@
             border-radius: 15px;
             width: 100%;
             max-width: 600px;
+            max-width: 800px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             transition: transform 0.3s ease;
         }
@@ -48,7 +49,10 @@
             width: 150px;
             margin-bottom: 20px;
         }
-        .floating-stitch {
+        audio {
+            display: none;
+        }
+    .floating-stitch {
             position: absolute;
             width: 60px;
             animation: float 15s ease-in-out infinite;
@@ -66,10 +70,19 @@
             100% { transform: translateY(-20px); }
         }
         @keyframes sparkle {
-            0% { opacity: 0; transform: scale(0.5) rotate(0deg); filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); }
-            30% { opacity: 1; transform: scale(1.2) rotate(90deg); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)); }
-            60% { opacity: 1; transform: scale(1.5) rotate(180deg); filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)); }
-            100% { opacity: 0; transform: scale(0) rotate(360deg); filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); }
+            0% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+            30% { opacity: 1; transform: scale(1.2) rotate(90deg); }
+            60% { opacity: 1; transform: scale(1.5) rotate(180deg); }
+            100% { opacity: 0; transform: scale(0) rotate(360deg); }
+            0% { opacity: 0; transform: scale(0.5) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1.5) rotate(180deg); }
+            100% { opacity: 0; transform: scale(0) rotate(360deg); }
+        }
+        .sparkle {
+            position: absolute;
+            width: 50px;
+            z-index: 999;
+            pointer-events: none;
         }
         .sparkle {
             position: absolute;
@@ -78,7 +91,13 @@
             pointer-events: none;
             filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
         }
-    </style>
+        @keyframes sparkle {
+            0% { opacity: 0; transform: scale(0.5) rotate(0deg); filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8)); }
+            30% { opacity: 1; transform: scale(1.2) rotate(90deg); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 1)); }
+            60% { opacity: 1; transform: scale(1.5) rotate(180deg); filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8)); }
+            100% { opacity: 0; transform: scale(0) rotate(360deg); filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); }
+        }
+        </style>
 </head>
 <body>
     <div id="intro-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #f0f8ff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;">
@@ -87,6 +106,85 @@
         <audio id="bg-music" loop>
             <source src="Best day of my life.mp3" type="audio/mpeg">
         </audio>
+        <audio id="sparkle-sound">
+            <source src="https://www.soundjay.com/button/sounds/button-16.mp3" type="audio/mpeg">
+        </audio>
     </div>
+    <h1>Good Luck for Your Final Exam!</h1>
+
+    <div class="section">
+        <img src="stich.png" alt="Stitch" class="stitch">
+        <p>Hey there! Remember, you're stronger than you think, and you've got this! 💪</p>
+    </div>
+
+    <div class="section">
+        <h2>Motivational Quotes</h2>
+        <p>"Believe in yourself and all that you are. Know that there is something inside you that is greater than any obstacle."</p>
+    </div>
+
+    <div class="section">
+        <h2>Final Countdown</h2>
+        <p id="countdown">Loading...</p>
+    </div>
+
+    
+
+    <script>
+        // Countdown logic
+        const countdownElement = document.getElementById('countdown');
+        const examDate = new Date().setHours(10, 0, 0, 0) + 86400000;
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = examDate - now;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            countdownElement.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s left until the big day!`;
+        }
+        setInterval(updateCountdown, 1000);
+            // Interactive Stitch Click Logic
+        const introOverlay = document.getElementById('intro-overlay');
+        const introStitch = document.getElementById('intro-stitch');
+        const bgMusic = document.getElementById('bg-music');
+
+        introStitch.addEventListener('click', () => {
+            introOverlay.style.transition = 'opacity 1s ease, transform 1s ease';
+            introOverlay.style.opacity = '0';
+            introOverlay.style.transform = 'scale(0.5)';
+            setTimeout(() => introOverlay.style.display = 'none', 1000);
+            bgMusic.play().catch(error => console.error('Autoplay blocked:', error));
+        });
+</script>
+    <img src="stich.png" alt="Floating Stitch" class="floating-stitch" style="top: 20%; left: 10%;">
+    <img src="stich.png" alt="Floating Stitch" class="floating-stitch" style="top: 40%; right: 15%;">
+    <img src="stich.png" alt="Floating Stitch" class="floating-stitch" style="bottom: 30%; left: 20%;">
+    <img src="stich.png" alt="Floating Stitch" class="floating-stitch" style="bottom: 20%; right: 25%;">
+<div id="sparkle-container"></div>
+
+<script>
+    // Sparkle Effect on Stitch Click
+    function createSparkle(x, y) {
+        const sparkle = document.createElement('img');
+        sparkle.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Five-pointed_star.svg/1200px-Five-pointed_star.svg.png';
+        sparkle.className = 'sparkle';
+        sparkle.style.animation = 'sparkle 1s ease-out';
+        sparkle.style.left = `${x - 25}px`;
+        sparkle.style.top = `${y - 25}px`;
+        document.body.appendChild(sparkle);
+
+        setTimeout(() => sparkle.remove(), 1000);
+    }
+
+    introStitch.addEventListener('click', (e) => {
+        for (let i = 0; i < 8; i++) {
+            const offsetX = Math.random() * 200 - 100;
+            const offsetY = Math.random() * 200 - 100;
+            createSparkle(e.clientX + offsetX, e.clientY + offsetY);
+        document.getElementById('sparkle-sound').play();
+        }
+    });
+</script>
 </body>
 </html>
