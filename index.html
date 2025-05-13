@@ -53,10 +53,11 @@
             display: none;
         }
     .floating-stitch {
-            position: absolute;
+            position: fixed;
             width: 60px;
             animation: float 15s ease-in-out infinite;
-            z-index: 10;
+            z-index: 1;
+            pointer-events: none;
         }
         @keyframes float {
             0% { transform: translate(0, 0) rotate(0deg); }
